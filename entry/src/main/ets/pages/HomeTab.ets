@@ -11,7 +11,7 @@ struct HomeFunctionItem {
 
   build() {
     Column() {
-      // 图标（圆形背景 + 图片）
+      // 图标
       Image(this.icon)
         .width(48)
         .height(48)
