@@ -119,6 +119,106 @@
     {
       "name": "service_detail_card_space",
       "value": "8vp"
+    },
+    {
+      "name": "home_header_title_font_size",
+      "value": "16fp"
+    },
+    {
+      "name": "home_header_height",
+      "value": "48vp"
+    },
+    {
+      "name": "home_banner_top_margin",
+      "value": "4vp"
+    },
+    {
+      "name": "home_function_area_horizontal_margin",
+      "value": "4vp"
+    },
+    {
+      "name": "home_function_area_top_margin",
+      "value": "8vp"
+    },
+    {
+      "name": "home_function_area_radius",
+      "value": "12vp"
+    },
+    {
+      "name": "home_function_area_horizontal_padding",
+      "value": "8vp"
+    },
+    {
+      "name": "home_function_row_height",
+      "value": "90vp"
+    },
+    {
+      "name": "home_function_icon_size",
+      "value": "48vp"
+    },
+    {
+      "name": "home_function_icon_radius",
+      "value": "8vp"
+    },
+    {
+      "name": "home_function_text_font_size",
+      "value": "14fp"
+    },
+    {
+      "name": "home_function_text_top_margin",
+      "value": "12vp"
+    },
+    {
+      "name": "home_health_section_title_font_size",
+      "value": "18fp"
+    },
+    {
+      "name": "home_health_section_title_left_margin",
+      "value": "16vp"
+    },
+    {
+      "name": "home_health_section_title_top_margin",
+      "value": "16vp"
+    },
+    {
+      "name": "home_health_section_title_bottom_margin",
+      "value": "4vp"
+    },
+    {
+      "name": "home_health_card_title_font_size",
+      "value": "16fp"
+    },
+    {
+      "name": "home_health_card_title_left_margin",
+      "value": "8vp"
+    },
+    {
+      "name": "home_health_card_title_top_margin",
+      "value": "12vp"
+    },
+    {
+      "name": "home_health_card_title_bottom_margin",
+      "value": "12vp"
+    },
+    {
+      "name": "home_health_card_border_width",
+      "value": "1vp"
+    },
+    {
+      "name": "home_health_card_radius",
+      "value": "16vp"
+    },
+    {
+      "name": "home_health_card_horizontal_margin",
+      "value": "4vp"
+    },
+    {
+      "name": "home_health_card_top_margin",
+      "value": "8vp"
+    },
+    {
+      "name": "home_bottom_blank_height",
+      "value": "16vp"
     }
   ]
 }
