@@ -3,16 +3,22 @@ import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import type common from '@ohos.app.ability.common';
 import { ReservationStoreManager, type ReservationRecord } from '../utils/ReservationStoreManager';
+import { getDefaultServiceDetail, getServiceDetailById, loadServiceCatalog, type ServiceDetail } from '../model/ServiceCatalog';
 
 
 interface SelectOption {
   value: string;
 }
 
+interface ServiceReservationRouteParams {
+  id?: number | string;
+}
+
 @Entry
 @Component
 export default struct ServiceReservationPage {
   private context: common.UIAbilityContext = getContext() as common.UIAbilityContext;
+  @State detail: ServiceDetail = getDefaultServiceDetail();
 
   // 下拉选项示例：康养用户 / 看护 / 时间
   private userOptions: SelectOption[] = [
@@ -39,6 +45,27 @@ export default struct ServiceReservationPage {
   @State contactPhone: string = '';
   @State address: string = '';
   @State remark: string = '';
+
+  aboutToAppear() {
+    const params = router.getParams() as ServiceReservationRouteParams;
+    let serviceId: number = 0;
+    if (params && typeof params.id === 'number') {
+      serviceId = params.id;
+    } else if (params && typeof params.id === 'string') {
+      const parsedId = Number(params.id);
+      if (parsedId === parsedId) {
+        serviceId = parsedId;
+      }
+    }
+    loadServiceCatalog(this.context)
+      .then((list: ServiceDetail[]) => {
+        this.detail = getServiceDetailById(list, serviceId);
+      })
+      .catch((err: Error) => {
+        console.error('预约服务加载失败:', err);
+        this.detail = getDefaultServiceDetail();
+      });
+  }
 
   build() {
     Column() {
@@ -80,7 +107,7 @@ export default struct ServiceReservationPage {
             // 顶部服务信息卡片
             Column() {
               // 顶部图片
-              Image($r('app.media.service_img1'))
+              Image(this.detail.image)
                 .width('100%')
                 .objectFit(ImageFit.Cover)
                 .padding({
@@ -94,7 +121,7 @@ export default struct ServiceReservationPage {
 
               // 文字信息
               Column() {
-                Text('检查')
+                Text(this.detail.title)
                   .fontSize($r('app.float.service_card_title_font_size'))
                   .fontWeight(FontWeight.Medium)
                   .fontColor($r('app.color.service_primary_text_color'))
@@ -113,7 +140,7 @@ export default struct ServiceReservationPage {
 
                   Blank().layoutWeight(1)
 
-                  Text('中山大学服务中心')
+                  Text(this.detail.orgName)
                     .fontSize($r('app.float.service_body_font_size'))
                     .fontColor($r('app.color.service_primary_text_color'))
                 }
@@ -131,7 +158,7 @@ export default struct ServiceReservationPage {
 
                   Blank().layoutWeight(1)
 
-                  Text('检查')
+                  Text(this.detail.typeName)
                     .fontSize($r('app.float.service_body_font_size'))
                     .fontColor($r('app.color.service_primary_text_color'))
                 }
@@ -149,7 +176,7 @@ export default struct ServiceReservationPage {
 
                   Blank().layoutWeight(1)
 
-                  Text('¥ 36')
+                  Text('¥ ' + this.detail.price.toString())
                     .fontSize($r('app.float.service_emphasis_font_size'))
                     .fontWeight(FontWeight.Medium)
                     .fontColor($r('app.color.service_price_text_color')) // 示例中的橙色

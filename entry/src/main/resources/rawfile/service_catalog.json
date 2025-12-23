@@ -1,0 +1,72 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "title": "检查",
+      "orgName": "中山大学服务中心",
+      "typeName": "检查",
+      "price": 36,
+      "imageName": "service_img1",
+      "intro": "提供常规体检项目，如心率、血压、血糖等，可根据康养用户情况调整。",
+      "reservationNotice": "预约成功后请保持电话畅通，工作人员会联系确认上门时间。如需取消请提前 24 小时操作。",
+      "feeNotice": "服务价格包含基础检查项目与上门服务费用，如需额外项目以实际沟通为准。",
+      "feeItems": [
+        { "label": "出诊费", "amount": 12 },
+        { "label": "技术费", "amount": 12 },
+        { "label": "耗材费", "amount": 12 }
+      ],
+      "totalPrice": 36
+    },
+    {
+      "id": 2,
+      "title": "护理",
+      "orgName": "福建星网锐捷",
+      "typeName": "护理",
+      "price": 60,
+      "imageName": "service_img2",
+      "intro": "提供基础护理服务，如翻身拍背、皮肤护理、用药提醒与生命体征观察。",
+      "reservationNotice": "请提前准备护理环境与所需用品，护理人员将按预约时间上门服务。",
+      "feeNotice": "价格包含护理服务与基础耗材，特殊耗材或额外服务需另行确认。",
+      "feeItems": [
+        { "label": "出诊费", "amount": 20 },
+        { "label": "护理费", "amount": 25 },
+        { "label": "耗材费", "amount": 15 }
+      ],
+      "totalPrice": 60
+    },
+    {
+      "id": 3,
+      "title": "康复",
+      "orgName": "康养中心",
+      "typeName": "康复",
+      "price": 88,
+      "imageName": "service_img3",
+      "intro": "针对术后或慢病人群提供关节活动度、步态与肌力训练服务。",
+      "reservationNotice": "请穿着便于运动的衣物，训练前如有不适请及时告知。",
+      "feeNotice": "费用包含评估与训练，额外器材或延时服务需另行计费。",
+      "feeItems": [
+        { "label": "评估费", "amount": 28 },
+        { "label": "训练费", "amount": 40 },
+        { "label": "器材费", "amount": 20 }
+      ],
+      "totalPrice": 88
+    },
+    {
+      "id": 4,
+      "title": "营养评估",
+      "orgName": "康养中心",
+      "typeName": "营养评估",
+      "price": 48,
+      "imageName": "service_img4",
+      "intro": "根据饮食习惯与健康状况进行营养评估，并给出个性化饮食建议。",
+      "reservationNotice": "请准备近期饮食记录与基础体检信息，便于评估。",
+      "feeNotice": "费用包含评估与建议报告，后续跟踪服务需另行确认。",
+      "feeItems": [
+        { "label": "评估费", "amount": 18 },
+        { "label": "报告费", "amount": 20 },
+        { "label": "咨询费", "amount": 10 }
+      ],
+      "totalPrice": 48
+    }
+  ]
+}
