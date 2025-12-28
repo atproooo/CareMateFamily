@@ -84,7 +84,7 @@ export default struct ServiceReservationPage {
         .onClick(() => router.back())
 
         // 中：标题（占满剩余空间，居中）
-        Text('服务项目列表')
+        Text('服务预约')
           .fontSize($r('app.float.common_nav_title_font_size'))
           .fontWeight(FontWeight.Normal)
           .fontColor($r('app.color.common_nav_text_color'))
