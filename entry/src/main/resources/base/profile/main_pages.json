@@ -7,8 +7,10 @@
     "pages/ServicePurchasePage",
     "pages/ServiceItemDetailPage",
     "pages/ServiceReservationPage",
+    "pages/ServiceOrderDetailPage",
     "pages/LoginPage",
-    "pages/RegisterPage",
-    "pages/ServiceOrderDetailPage"
+    "pages/AdmissionRecordsPage",
+    "pages/AdmissionRecordDetailPage",
+    "pages/RegisterPage"
   ]
 }
