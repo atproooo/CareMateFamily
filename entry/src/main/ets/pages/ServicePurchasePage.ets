@@ -1,45 +1,7 @@
 // 服务采购首页：服务项目列表页
 import router from '@ohos.router';
-
-// 服务项目数据结构定义
-interface ServiceItem {
-  id: number; // 唯一标识
-  title: string; // 服务名称/类型，例如“检查”
-  orgName: string; // 服务机构名称
-  typeName: string; // 服务类型显示文本
-  price: number; // 价格
-  image: Resource; // 图片资源
-}
-
-
-// 示例数据（后续可改为从 JSON 读取）
-const SERVICE_LIST: ServiceItem[] = [
-  {
-    id: 1,
-    title: '检查',
-    orgName: '福建星网锐捷',
-    typeName: '检查',
-    price: 36,
-    image: $r('app.media.service_img1')
-  },
-  {
-    id: 2,
-    title: '检查',
-    orgName: '中山大学展示中心',
-    typeName: '检查',
-    price: 36,
-    image: $r('app.media.service_img1')
-  },
-  {
-    id: 3,
-    title: '检查',
-    orgName: '示例康养中心',
-    typeName: '检查',
-    price: 36,
-    image: $r('app.media.service_img1')
-  }
-];
-
+import type common from '@ohos.app.ability.common';
+import { loadServiceCatalog, type ServiceItem } from '../model/ServiceCatalog';
 
 // 服务项目卡片组件
 @Component
@@ -144,16 +106,24 @@ struct ServiceItemCard {
     })
     .onClick(() => {
       // 点击进入详情页
-      router.pushUrl({ url: 'pages/ServiceItemDetailPage' });
+      router.pushUrl({
+        url: 'pages/ServiceItemDetailPage',
+        params: {
+          id: this.item.id
+        }
+      });
     })
   }
 }
 
 
 // 页面内部内容
-@Builder
-function ServicePurchaseContent() {
-  Column() {
+@Component
+struct ServicePurchaseContent {
+  @Prop serviceList: ServiceItem[];
+
+  build() {
+    Column() {
     // 顶部标题栏：返回 + 标题
     Row() {
       // 左：返回按钮
@@ -186,35 +156,49 @@ function ServicePurchaseContent() {
 
 
     // 列表区域
-    Scroll() {
-      Column() {
-        ForEach(
-          SERVICE_LIST,
-          (item: ServiceItem) => {
-            ServiceItemCard({ item: item });
-          },
-          (item: ServiceItem) => item.id.toString()
-        )
+      Scroll() {
+        Column() {
+          ForEach(
+            this.serviceList,
+            (item: ServiceItem) => {
+              ServiceItemCard({ item: item });
+            },
+            (item: ServiceItem) => item.id.toString()
+          )
 
-        Blank().height(16)
+          Blank().height(16)
+        }
+        .width('100%')
       }
       .width('100%')
+      .layoutWeight(1)
     }
     .width('100%')
-    .layoutWeight(1)
+    .height('100%')
   }
-  .width('100%')
-  .height('100%')
 }
 
 // 页面组件入口
 @Entry
 @Component
 export default struct ServicePurchasePage {
+  private context: common.UIAbilityContext = getContext() as common.UIAbilityContext;
+  @State serviceList: ServiceItem[] = [];
+
+  aboutToAppear() {
+    loadServiceCatalog(this.context)
+      .then((list: ServiceItem[]) => {
+        this.serviceList = list;
+      })
+      .catch((err: Error) => {
+        console.error('服务列表加载失败:', err);
+      });
+  }
+
   build() {
     Column() {
       // 把真正页面内容塞进来
-      ServicePurchaseContent();
+      ServicePurchaseContent({ serviceList: this.serviceList });
     }
     .width('100%')
     .height('100%')

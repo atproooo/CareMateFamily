@@ -1,0 +1,15 @@
+{
+  "src": [
+    "pages/MainTabPage",
+    "pages/VisitRecordsPage",
+    "pages/ServiceOrdersPage",
+    "pages/AdmissionApplyPage",
+    "pages/ServicePurchasePage",
+    "pages/ServiceItemDetailPage",
+    "pages/ServiceReservationPage",
+    "pages/LoginPage",
+    "pages/AdmissionRecordsPage",
+    "pages/AdmissionRecordDetailPage",
+    "pages/RegisterPage"
+  ]
+}

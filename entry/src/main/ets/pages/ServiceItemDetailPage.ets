@@ -1,9 +1,39 @@
 // 服务项目详情页
 import router from '@ohos.router';
+import type common from '@ohos.app.ability.common';
+import { getDefaultServiceDetail, getServiceDetailById, loadServiceCatalog, type FeeItem, type ServiceDetail } from '../model/ServiceCatalog';
+
+interface ServiceDetailRouteParams {
+  id?: number | string;
+}
 
 @Entry
 @Component
 export default struct ServiceItemDetailPage {
+  private context: common.UIAbilityContext = getContext() as common.UIAbilityContext;
+  @State detail: ServiceDetail = getDefaultServiceDetail();
+
+  aboutToAppear() {
+    const params = router.getParams() as ServiceDetailRouteParams;
+    let serviceId: number = 0;
+    if (params && typeof params.id === 'number') {
+      serviceId = params.id;
+    } else if (params && typeof params.id === 'string') {
+      const parsedId = Number(params.id);
+      if (parsedId === parsedId) {
+        serviceId = parsedId;
+      }
+    }
+    loadServiceCatalog(this.context)
+      .then((list: ServiceDetail[]) => {
+        this.detail = getServiceDetailById(list, serviceId);
+      })
+      .catch((err: Error) => {
+        console.error('服务详情加载失败:', err);
+        this.detail = getDefaultServiceDetail();
+      });
+  }
+
   build() {
     Column() {
       // 顶部导肮栏
@@ -21,7 +51,7 @@ export default struct ServiceItemDetailPage {
         .onClick(() => router.back())
 
         // 中：标题（占满剩余空间，居中）
-        Text('服务详情列表')
+        Text('服务项目详情')
           .fontSize($r('app.float.common_nav_title_font_size'))
           .fontWeight(FontWeight.Normal)
           .fontColor($r('app.color.common_nav_text_color'))
@@ -43,7 +73,7 @@ export default struct ServiceItemDetailPage {
           Column() {
             Column() {
               // 顶部图片
-              Image($r('app.media.service_img1'))
+              Image(this.detail.image)
                 .width('100%')
                 .objectFit(ImageFit.Cover)
                 .padding({
@@ -57,7 +87,7 @@ export default struct ServiceItemDetailPage {
 
               // 卡片文字信息
               Column() {
-                Text('检查')
+                Text(this.detail.title)
                   .fontSize($r('app.float.service_card_title_font_size'))
                   .fontWeight(FontWeight.Medium)
                   .fontColor($r('app.color.service_primary_text_color'))
@@ -76,7 +106,7 @@ export default struct ServiceItemDetailPage {
 
                   Blank().layoutWeight(1)
 
-                  Text('中山大学服务中心')
+                  Text(this.detail.orgName)
                     .fontSize($r('app.float.service_body_font_size'))
                     .fontColor($r('app.color.service_primary_text_color'))
                 }
@@ -94,7 +124,7 @@ export default struct ServiceItemDetailPage {
 
                   Blank().layoutWeight(1)
 
-                  Text('检查')
+                  Text(this.detail.typeName)
                     .fontSize($r('app.float.service_body_font_size'))
                     .fontColor($r('app.color.service_primary_text_color'))
                 }
@@ -127,7 +157,7 @@ export default struct ServiceItemDetailPage {
                 bottom: $r('app.float.service_item_small_bottom_margin')
               })
 
-              Text('提供例行体检项目，例如心率、血压、血脂检查等，可根据康养用户实际情况进行调整。')
+              Text(this.detail.intro)
                 .fontSize($r('app.float.service_body_font_size'))
                 .fontColor($r('app.color.service_tertiary_text_color'))
                 .margin({
@@ -157,7 +187,7 @@ export default struct ServiceItemDetailPage {
                 bottom: $r('app.float.service_item_small_bottom_margin')
               })
 
-              Text('预约成功后，请保持电话畅通，工作人员会联系确认具体上门时间。若需取消，请提前 24 小时操作。')
+              Text(this.detail.reservationNotice)
                 .fontSize($r('app.float.service_body_font_size'))
                 .fontColor($r('app.color.service_tertiary_text_color'))
                 .margin({
@@ -187,7 +217,7 @@ export default struct ServiceItemDetailPage {
                 bottom: $r('app.float.service_item_small_bottom_margin')
               })
 
-              Text('服务价格包含基本检查项目及上门服务费用，如需增加额外检查项目，以实际沟通为准。')
+              Text(this.detail.feeNotice)
                 .fontSize($r('app.float.service_body_font_size'))
                 .fontColor($r('app.color.service_tertiary_text_color'))
                 .margin({
@@ -219,52 +249,26 @@ export default struct ServiceItemDetailPage {
 
               // 各种费用
               Column() {
-                Row() {
-                  Text('出诊费')
-                    .fontSize($r('app.float.service_body_font_size'))
-                    .fontColor($r('app.color.service_tertiary_text_color'))
-                  Blank().layoutWeight(1)
-                  Text('¥ 12')
-                    .fontSize($r('app.float.service_body_font_size'))
-                    .fontColor($r('app.color.service_tertiary_text_color'))
-                }
-                .margin({
-                  left: $r('app.float.service_text_left_right_margin'),
-                  right: $r('app.float.service_text_left_right_margin'),
-                  bottom: 12
-                })
-
-                // 技术费
-                Row() {
-                  Text('技术费')
-                    .fontSize($r('app.float.service_body_font_size'))
-                    .fontColor($r('app.color.service_tertiary_text_color'))
-                  Blank().layoutWeight(1)
-                  Text('¥ 12')
-                    .fontSize($r('app.float.service_body_font_size'))
-                    .fontColor($r('app.color.service_tertiary_text_color'))
-                }
-                .margin({
-                  left: $r('app.float.service_text_left_right_margin'),
-                  right: $r('app.float.service_text_left_right_margin'),
-                  bottom: 12
-                })
-
-                // 耗材费
-                Row() {
-                  Text('耗材费')
-                    .fontSize($r('app.float.service_body_font_size'))
-                    .fontColor($r('app.color.service_tertiary_text_color'))
-                  Blank().layoutWeight(1)
-                  Text('¥ 12')
-                    .fontSize($r('app.float.service_body_font_size'))
-                    .fontColor($r('app.color.service_tertiary_text_color'))
-                }
-                .margin({
-                  left: $r('app.float.service_text_left_right_margin'),
-                  right: $r('app.float.service_text_left_right_margin'),
-                  bottom: 12
-                })
+                ForEach(
+                  this.detail.feeItems,
+                  (item: FeeItem) => {
+                    Row() {
+                      Text(item.label)
+                        .fontSize($r('app.float.service_body_font_size'))
+                        .fontColor($r('app.color.service_tertiary_text_color'))
+                      Blank().layoutWeight(1)
+                      Text('¥ ' + item.amount.toString())
+                        .fontSize($r('app.float.service_body_font_size'))
+                        .fontColor($r('app.color.service_tertiary_text_color'))
+                    }
+                    .margin({
+                      left: $r('app.float.service_text_left_right_margin'),
+                      right: $r('app.float.service_text_left_right_margin'),
+                      bottom: 12
+                    })
+                  },
+                  (item: FeeItem) => item.label
+                )
 
                 // 总金额
                 Row() {
@@ -273,7 +277,7 @@ export default struct ServiceItemDetailPage {
                     .fontWeight(FontWeight.Medium)
                     .fontColor($r('app.color.service_primary_text_color'))
                   Blank().layoutWeight(1)
-                  Text('¥ 36')
+                  Text('¥ ' + this.detail.totalPrice.toString())
                     .fontSize($r('app.float.service_mid_emphasis_font_size'))
                     .fontWeight(FontWeight.Medium)
                     .fontColor($r('app.color.service_price_text_color'))
@@ -313,7 +317,12 @@ export default struct ServiceItemDetailPage {
             .fontSize($r('app.float.service_button_font_size'))
             .borderRadius($r('app.float.service_button_border_radius'))
             .onClick(() => {
-              router.pushUrl({ url: 'pages/ServiceReservationPage' });
+              router.pushUrl({
+                url: 'pages/ServiceReservationPage',
+                params: {
+                  id: this.detail.id
+                }
+              });
             })
         }
         .width('100%')
