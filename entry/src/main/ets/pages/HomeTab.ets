@@ -1,5 +1,6 @@
 import router from '@ohos.router';
 import { PullToRefresh } from '../components/PullToRefresh';
+import { getHealthEduList, type HealthEduItem } from '../model/HealthEduCatalog';
 
 /**
  * 首页功能入口小组件
@@ -82,12 +83,6 @@ struct HealthEduCard {
 /**
  * 健康宣教数据结构
  */
-interface HealthEduItem {
-  id: number;
-  img: Resource;
-  title: string;
-}
-
 /**
  * 首页 Tab 页面
  */
@@ -96,14 +91,7 @@ export default struct HomeTab {
   // 下拉刷新状态，由 PullToRefresh 在下拉触发时改为 true，onRefreshingChanged() 执行刷新逻辑后再改回 false（结束刷新动画）
   @State @Watch('onRefreshingChanged') isRefreshing: boolean = false;
 
-  @State healthEduList: HealthEduItem[] = [
-    { id: 1, img: $r('app.media.health_img1'), title: '老年痴呆' },
-    { id: 2, img: $r('app.media.health_img2'), title: '关注帕金森病' },
-    { id: 3, img: $r('app.media.health_img3'), title: '运动健康' },
-    { id: 4, img: $r('app.media.health_img4'), title: '骨质疏松预防' },
-    { id: 5, img: $r('app.media.health_img5'), title: '高血压管理' },
-    { id: 6, img: $r('app.media.health_img6'), title: '睡眠健康' }
-  ];
+  @State healthEduList: HealthEduItem[] = getHealthEduList();
 
   //打乱健康宣教列表顺序
   private shuffleHealthEduList(): void {
@@ -272,7 +260,15 @@ export default struct HomeTab {
         ForEach(
           this.healthEduList,
           (item: HealthEduItem) => {
-            HealthEduCard({ img: item.img, title: item.title });
+            Column() {
+              HealthEduCard({ img: item.img, title: item.title });
+            }
+            .onClick((): void => {
+              router.pushUrl({
+                url: 'pages/HealthEduDetailPage',
+                params: { id: item.id }
+              });
+            })
           },
           (item: HealthEduItem) => item.id.toString()
         )

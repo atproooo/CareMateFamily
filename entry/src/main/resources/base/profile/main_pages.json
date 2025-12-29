@@ -8,6 +8,7 @@
     "pages/ServiceItemDetailPage",
     "pages/ServiceReservationPage",
     "pages/ServiceOrderDetailPage",
+    "pages/HealthEduDetailPage",
     "pages/LoginPage",
     "pages/AdmissionRecordsPage",
     "pages/AdmissionRecordDetailPage",
