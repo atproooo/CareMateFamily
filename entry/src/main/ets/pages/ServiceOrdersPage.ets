@@ -1,65 +1,33 @@
-import router from '@ohos.router'
+import router from '@ohos.router';
+import type common from '@ohos.app.ability.common';
+import { ReservationStoreManager, type ReservationRecord } from '../utils/ReservationStoreManager';
 
-// ===== 服务订单数据结构 =====
-interface ServiceOrder {
-  id: number
-  serviceType: string        // 服务类型
-  status: string             // 已服务 / 待服务
-  caredPerson: string        // 被看护人
-  orderNo: string            // 服务单号
-  nurseName: string          // 看护名称
-  reserveTime: string        // 预约时间
-  price: number              // 服务价格
+// 静态“已服务”示例
+const STATIC_SERVICE_ORDER: ReservationRecord = {
+  id: 'static_demo_1',
+  submitTime: 0,
+  serviceType: '检查',
+  status: '已服务',
+  orderNo: 'kh_171013049489',
+  price: 36,
+  serviceUser: '王国栋',
+  nurseName: '陈婷',
+  serviceTime: '2025-01-01 09:00',
+  contactName: '陈婷',
+  contactPhone: '18800000000',
+  address: '北京',
+  remark: ''
+};
+
+interface ServiceOrderRouteParams {
+  id: string;
+  order: ReservationRecord;
 }
 
-// ===== 示例订单数据 =====
-const SERVICE_ORDER_LIST: ServiceOrder[] = [
-  {
-    id: 1,
-    serviceType: '检查',
-    status: '已服务',
-    caredPerson: '王国栋',
-    orderNo: 'kh_1011237333469',
-    nurseName: '王国栋',
-    reserveTime: '2024-09-12 11:00 - 12:00',
-    price: 10
-  },
-  {
-    id: 2,
-    serviceType: '检查',
-    status: '已服务',
-    caredPerson: '王国栋',
-    orderNo: 'kh_1011237333469',
-    nurseName: '王国栋',
-    reserveTime: '2024-09-12 11:00 - 12:00',
-    price: 10
-  },
-  {
-    id: 3,
-    serviceType: '检查',
-    status: '已服务',
-    caredPerson: '王国栋',
-    orderNo: 'kh_1011237333469',
-    nurseName: '王国栋',
-    reserveTime: '2024-09-12 11:00 - 12:00',
-    price: 10
-  },
-  {
-    id: 4,
-    serviceType: '检查',
-    status: '已服务',
-    caredPerson: '王国栋',
-    orderNo: 'kh_1011237333470',
-    nurseName: '王国栋',
-    reserveTime: '2024-09-05 09:00 - 10:00',
-    price: 10
-  }
-]
-
-// ===== 单个服务订单卡片 =====
+// 单个服务订单卡片
 @Component
 struct ServiceOrderCard {
-  @Prop order: ServiceOrder
+  @Prop order: ReservationRecord;
 
   build() {
     Column() {
@@ -72,9 +40,19 @@ struct ServiceOrderCard {
 
         Blank().layoutWeight(1)
 
+        // “已服务” “未服务”
         Text(this.order.status)
           .fontSize($r('app.float.service_body_font_size'))
-          .fontColor($r('app.color.service_secondary_text_color'))
+          .fontColor(this.order.status === '已服务' ? $r('app.color.service_secondary_text_color') : 0xFF2F80ED)
+          .borderWidth(1)
+          .borderColor(this.order.status === '已服务' ? $r('app.color.service_secondary_text_color') : 0xFF2F80ED)
+          .borderRadius(2)
+          .padding({
+            left: 2,
+            right: 2,
+            top: 2,
+            bottom: 2
+          })
       }
       .margin({
         left: $r('app.float.service_text_left_right_margin'),
@@ -83,10 +61,10 @@ struct ServiceOrderCard {
         bottom: $r('app.float.service_item_small_bottom_margin')
       })
 
-      this.InfoRow('被看护人', this.order.caredPerson)
+      this.InfoRow('被看护人', this.order.serviceUser)
       this.InfoRow('服务单号', this.order.orderNo)
       this.InfoRow('看护名称', this.order.nurseName)
-      this.InfoRow('预约时间', this.order.reserveTime)
+      this.InfoRow('预约时间', this.order.serviceTime)
 
       // 服务价格
       Row() {
@@ -118,11 +96,15 @@ struct ServiceOrderCard {
       top: $r('app.float.service_card_space')
     })
     .onClick(() => {
-      router.pushUrl({ url: 'pages/ServiceOrderDetailPage' })
+      const params: ServiceOrderRouteParams = {
+        id: this.order.id,
+        order: this.order
+      };
+      router.pushUrl({ url: 'pages/ServiceOrderDetailPage', params: params })
     })
   }
 
-  // ===== 左右对齐信息行 =====
+  // 左右对齐信息行
   @Builder
   InfoRow(label: string, value: string) {
     Row() {
@@ -146,64 +128,83 @@ struct ServiceOrderCard {
   }
 }
 
-// ===== 页面内容 Builder =====
-@Builder
-function ServiceOrdersContent() {
-  Column() {
-    // 顶部标题栏
-    Row() {
-      Row() {
-        Text('‹')
-          .fontSize($r('app.float.common_nav_icon_font_size'))
-          .fontColor($r('app.color.common_nav_text_color'))
-      }
-      .width($r('app.float.common_nav_side_width'))
-      .height($r('app.float.common_nav_height'))
-      .justifyContent(FlexAlign.Center)
-      .alignItems(VerticalAlign.Center)
-      .onClick(() => router.back())
-
-      Text('服务订单')
-        .fontSize($r('app.float.common_nav_title_font_size'))
-        .fontColor($r('app.color.common_nav_text_color'))
-        .layoutWeight(1)
-        .textAlign(TextAlign.Center)
-
-      Blank().width($r('app.float.common_nav_side_width'))
-    }
-    .height($r('app.float.common_nav_height'))
-    .width('100%')
-
-    // 列表区域
-    Scroll() {
-      Column() {
-        ForEach(
-          SERVICE_ORDER_LIST,
-          (order: ServiceOrder) => {
-            ServiceOrderCard({ order: order })
-          },
-          (order: ServiceOrder) => order.id.toString()
-        )
-
-        Blank().height(16)
-      }
-      .width('100%')
-      // .height('100%')
-      // .justifyContent(FlexAlign.Start)
-    }
-    .layoutWeight(1)
-  }
-  .width('100%')
-  .height('100%')
-}
-
-// ===== 页面入口 =====
+// 页面入口
 @Entry
 @Component
 export default struct ServiceOrdersPage {
+  private context: common.UIAbilityContext = getContext() as common.UIAbilityContext;
+  @State orderList: ReservationRecord[] = [];
+
+  aboutToAppear(): void {
+    this.loadOrders();
+  }
+
+  // 从 KvStore 读取订单
+  private loadOrders(): void {
+    ReservationStoreManager.getInstance()
+      .initKvStore(this.context)
+      .then(() => ReservationStoreManager.getInstance().getReservations())
+      .then((list: ReservationRecord[]) => {
+        this.orderList = [STATIC_SERVICE_ORDER].concat(list);
+      })
+      .catch((err: Error) => {
+        console.error('读取订单失败:', err);
+        this.orderList = [STATIC_SERVICE_ORDER];
+      });
+  }
+
+  // 页面内容
+  @Builder
+  private buildOrdersContent(): void {
+    Column() {
+      // 顶部标题栏
+      Row() {
+        Row() {
+          Text('<')
+            .fontSize($r('app.float.common_nav_icon_font_size'))
+            .fontColor($r('app.color.common_nav_text_color'))
+        }
+        .width($r('app.float.common_nav_side_width'))
+        .height($r('app.float.common_nav_height'))
+        .justifyContent(FlexAlign.Center)
+        .alignItems(VerticalAlign.Center)
+        .onClick(() => router.back())
+
+        Text('服务订单')
+          .fontSize($r('app.float.common_nav_title_font_size'))
+          .fontColor($r('app.color.common_nav_text_color'))
+          .layoutWeight(1)
+          .textAlign(TextAlign.Center)
+
+        Blank().width($r('app.float.common_nav_side_width'))
+      }
+      .height($r('app.float.common_nav_height'))
+      .width('100%')
+
+      // 列表区域
+      Scroll() {
+        Column() {
+          ForEach(
+            this.orderList,
+            (order: ReservationRecord) => {
+              ServiceOrderCard({ order: order })
+            },
+            (order: ReservationRecord) => order.id.toString()
+          )
+
+          Blank().height(16)
+        }
+        .width('100%')
+      }
+    }
+    .width('100%')
+    .height('100%')
+  }
+
+  // 构造页面
   build() {
     Column() {
-      ServiceOrdersContent()
+      this.buildOrdersContent()
     }
     .width('100%')
     .height('100%')
