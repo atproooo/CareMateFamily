@@ -2,6 +2,8 @@
   "src": [
     "pages/MainTabPage",
     "pages/VisitRecordsPage",
+    "pages/VisitRecordDetailPage",
+    "pages/VisitRecordPayPage",
     "pages/ServiceOrdersPage",
     "pages/AdmissionApplyPage",
     "pages/ServicePurchasePage",
