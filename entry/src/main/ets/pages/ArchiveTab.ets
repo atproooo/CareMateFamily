@@ -10,7 +10,7 @@ struct UserCard {
   build() {
     Column({ space: 4 }) {
       // 卡片主体：左右布局
-      Row({ space: 8 }) {
+      Row({ space: 15 }) {
         // 左侧：头像和姓名
         Column({ space: 8 }) {
           // 头像
@@ -28,7 +28,7 @@ struct UserCard {
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
-        .width('20%')
+        .width('25%')
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
 
@@ -61,7 +61,7 @@ struct UserCard {
           // 信息行：身份证
           this.buildInfoRow('身份证', this.user.idCard)
         }
-        .width('80%')
+        .width('75%')
       }
       .padding(16)
     }
@@ -100,67 +100,6 @@ struct UserCard {
     }
     .width('100%')
     .margin({ bottom: 4,right: 4})
-  }
-}
-
-@Component
-struct TextSelector {
-  @State isShowDialog: boolean = false
-  @Prop selectedValue: string
-  @Prop options: string[]
-  @State private popupPosition: Position = { x: 0, y: 0 }
-  onValueChange?: (value: string) => void
-
-  build() {
-    Column({ space: 20 }) {
-      // 文本选择器
-      Text(this.selectedValue||'点击选择')
-        .id('selectorText')
-        .fontSize(20)
-        .fontColor(Color.Blue)
-        .padding(10)
-        .border({ width: 1, color: Color.Gray })
-        .borderRadius(8)
-        .onClick(async () => {
-          this.isShowDialog = !this.isShowDialog
-        })
-      if (this.isShowDialog){
-        Column() {
-          ForEach(this.options, (item: string) => {
-            Text(item)
-              .fontSize(18)
-              .width('100%')
-              .padding(15)
-              .backgroundColor(Color.White)
-              .onClick(() => {
-                this.onSelect(item)
-              })
-          }, (item: string) => item)
-        }
-        .width('100%')
-        .height('auto') // 限制最大高度
-        .border({ width: 1, color: Color.Gray })
-        .borderRadius(8)
-        .backgroundColor(Color.White)
-        .shadow({ radius: 10, color: Color.Gray, offsetX: 0, offsetY: 5 })
-        .position({ x: 0, y: 20 }) // 在文本下方
-        .zIndex(999) // 确保在最顶层
-        .onClick(() => {
-          // 阻止冒泡，避免点击选项时关闭
-        })
-      }
-    }
-    .width('100%')
-    .height('auto')
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
-  }
-  onSelect(item: string) {
-    this.selectedValue = item
-    this.isShowDialog = false
-    if (this.onValueChange !== undefined) {
-      this.onValueChange(item)
-    }
   }
 }
 
@@ -295,8 +234,6 @@ export default struct ArchiveTab {
     }
     .width('100%')
     .height('100%')
-
-
   }
 
   @Builder InputBuilder(label: string, placeholder: string, value: string, onChange: (val: string) => void) {
@@ -317,21 +254,6 @@ export default struct ArchiveTab {
     .width('100%')
     .margin({ bottom: 4,right: 4})
   }
-  @Builder SelectBuilder(label: string, options: string[], selectedValue: string, onSelect: (val: string) => void) {
-    Row() {
-      Text(label)
-        .fontSize(14)
-        .fontColor('#333')
-        .textAlign(TextAlign.Start)
-        .width('40%')
-      // 手动实现文本选择器
-      TextSelector({selectedValue:selectedValue, options:options, onValueChange:(val: string) => {onSelect(val)} })
-    }
-    .width('100%')
-    .height(40)
-    .margin({ bottom: 12 })
-  }
-
 
   onAdd() {
     this.newItem = {id:'',name:'',avatar:'',gender:'',relationship:'',birthday:'',idCard:''}
