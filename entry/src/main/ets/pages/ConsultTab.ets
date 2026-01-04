@@ -1,6 +1,10 @@
 import router from '@ohos.router';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { getHealthEduList, type HealthEduItem } from '../model/HealthEduCatalog';
+import { LazyLoadManager } from '../utils/LazyLoadManager';
+
+const HEALTH_EDU_PAGE_SIZE: number = 3;
+const INITIAL_HEALTH_EDU_LIST: HealthEduItem[] = getHealthEduList();
 
 /**
  * 健康宣教卡片组件
@@ -54,7 +58,25 @@ struct HealthEduCard {
 export default struct ConsultTab {
   // 下拉刷新状态，配合 PullToRefresh 使用
   @State @Watch('onRefreshingChanged') isRefreshing: boolean = false;
-  @State healthEduList: HealthEduItem[] = getHealthEduList();
+  @State healthEduList: HealthEduItem[] = INITIAL_HEALTH_EDU_LIST;
+  @State healthEduVisible: HealthEduItem[] = INITIAL_HEALTH_EDU_LIST.slice(0, HEALTH_EDU_PAGE_SIZE);
+  private healthEduLazy: LazyLoadManager<HealthEduItem> = new LazyLoadManager<HealthEduItem>(HEALTH_EDU_PAGE_SIZE);
+
+  aboutToAppear(): void {
+    this.initHealthEduLazy(false);
+  }
+
+  private initHealthEduLazy(keepCount: boolean): void {
+    this.healthEduLazy.reset(this.healthEduList, keepCount);
+    this.healthEduVisible = this.healthEduLazy.getVisibleItems();
+  }
+
+  private loadMoreHealthEdu(): void {
+    if (!this.healthEduLazy.canLoadMore()) {
+      return;
+    }
+    this.healthEduVisible = this.healthEduLazy.loadMore();
+  }
 
   // 打乱健康宣教列表顺序
   private shuffleHealthEduList(): void {
@@ -96,6 +118,8 @@ export default struct ConsultTab {
       return;
     }
     this.shuffleHealthEduList();
+    // 下拉刷新后重置懒加载
+    this.initHealthEduLazy(false);
     setTimeout((): void => {
       this.isRefreshing = false;
     }, 500);
@@ -145,7 +169,7 @@ export default struct ConsultTab {
 
         // 健康宣教卡片列表（数据驱动）
         ForEach(
-          this.healthEduList,
+          this.healthEduVisible,
           (item: HealthEduItem) => {
             Column() {
               HealthEduCard({ img: item.img, title: item.title });
@@ -167,6 +191,11 @@ export default struct ConsultTab {
     }
     .width('100%')
     .height('100%')
+    .onScrollEdge((side: Edge) => {
+      if (side === Edge.Bottom) {
+        this.loadMoreHealthEdu();
+      }
+    })
   }
 
   build() {
