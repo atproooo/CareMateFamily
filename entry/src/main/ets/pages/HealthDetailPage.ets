@@ -154,7 +154,8 @@ struct HealthTrendCard {
       ctx.beginPath();
       ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillText(values[i].toString(), point.x, point.y - 6);
+      const labelY: number = Math.max(point.y - 6, 12);
+      ctx.fillText(values[i].toString(), point.x, labelY);
     }
   }
 

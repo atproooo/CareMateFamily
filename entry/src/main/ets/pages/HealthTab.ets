@@ -122,7 +122,7 @@ struct HealthSmallCard {
       if (this.useImage) {
         Image(this.image)
           .width('100%')
-          .height(60)
+          .height(70)
           .objectFit(ImageFit.Cover)
           .borderRadius(10)
           .backgroundColor(this.blockColor)
@@ -516,7 +516,8 @@ struct HealthLargeCard {
       ctx.beginPath();
       ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillText(values[i].toString(), point.x, point.y - 6);
+      const labelY: number = Math.max(point.y - 6, 12);
+      ctx.fillText(values[i].toString(), point.x, labelY);
     }
   }
 
@@ -569,6 +570,7 @@ export default struct HealthTab {
   private careStore: CareUserStoreManager = CareUserStoreManager.getInstance();
 
   @StorageLink('healthDataRefresh') @Watch('onHealthRefreshChanged') private refreshKey: number = 0;
+  @StorageLink('careUserRefresh') @Watch('onCareUserRefreshChanged') private careUserRefreshKey: number = 0;
   @StorageLink('isLogin') @Watch('onLoginStateChanged') private isLogin: boolean = false;
   @StorageLink('userName') @Watch('onLoginUserChanged') private ownerName: string = '未登录';
 
@@ -601,6 +603,10 @@ export default struct HealthTab {
     this.loadUsersAndRefresh();
   }
 
+  onPageShow(): void {
+    this.loadUsersAndRefresh();
+  }
+
   private onHealthRefreshChanged(): void {
     this.loadUsersAndRefresh();
   }
@@ -610,6 +616,10 @@ export default struct HealthTab {
   }
 
   private onLoginUserChanged(): void {
+    this.loadUsersAndRefresh();
+  }
+
+  private onCareUserRefreshChanged(): void {
     this.loadUsersAndRefresh();
   }
 

@@ -89,6 +89,7 @@ struct HealthEduCard {
  */
 @Component
 export default struct HomeTab {
+  private scroller: Scroller = new Scroller();
   // 下拉刷新状态，由 PullToRefresh 在下拉触发时改为 true，onRefreshingChanged() 执行刷新逻辑后再改回 false（结束刷新动画）
   @State @Watch('onRefreshingChanged') isRefreshing: boolean = false;
 
@@ -176,7 +177,7 @@ export default struct HomeTab {
   //首页主体内容 Builder
   @Builder
   private buildHomeContent(): void {
-    Scroll() {
+    Scroll(this.scroller) {
       Column() {
         // 1. 顶部标题栏
         Row() {
@@ -316,33 +317,60 @@ export default struct HomeTab {
     })
   }
 
+  private scrollToTop(): void {
+    this.scroller.scrollTo({ xOffset: 0, yOffset: 0, animation: true });
+  }
+
+
   build() {
-    Column() {
-      /**
-       * PullToRefresh 负责：
-       * 1) 包裹可滚动内容（Scroll）
-       * 2) 下拉触发时把 refreshing 改为 true
-       *
-       * 真正的刷新逻辑由 @Watch(onRefreshingChanged) 负责
-       */
-      PullToRefresh({
-        refreshing: $isRefreshing,
-        pullOffset: 64 // 下拉触发阈值
-      }) {
-        this.buildHomeContent();
+    Stack({ alignContent: Alignment.BottomEnd }) {
+      Column() {
+        /**
+         * PullToRefresh 负责：
+         * 1) 包裹可滚动内容（Scroll）
+         * 2) 下拉触发时把 refreshing 改为 true
+         *
+         * 真正的刷新逻辑由 @Watch(onRefreshingChanged) 负责
+         */
+        PullToRefresh({
+          refreshing: $isRefreshing,
+          pullOffset: 64 // 下拉触发阈值
+        }) {
+          this.buildHomeContent();
+        }
       }
+      .width('100%')
+      .height('100%')
+      // 页面绿色渐变背景
+      .linearGradient({
+        angle: 180,
+        colors: [
+          [0xFF2EC7A8, 0.0],
+          [0xFFA0EACD, 0.35],
+          [0xFFF5FFFC, 0.5],
+          [0xFFFFFFFF, 1.0]
+        ]
+      })
+
+      // 右下角返回顶部按钮（样式同 HealthTab）
+      Row() {
+        Text('↑')
+          .fontSize(22)
+          .fontColor(0xFFFFFFFF)
+      }
+      .width(54)
+      .height(54)
+      .backgroundColor($r('app.color.service_button_background_color'))
+      .borderRadius(27)
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .margin({ right: 20, bottom: 20 })
+      .onClick(() => {
+        this.scrollToTop();
+      })
+      .zIndex(10)
     }
     .width('100%')
     .height('100%')
-    // 页面绿色渐变背景
-    .linearGradient({
-      angle: 180,
-      colors: [
-        [0xFF2EC7A8, 0.0],
-        [0xFFA0EACD, 0.35],
-        [0xFFF5FFFC, 0.5],
-        [0xFFFFFFFF, 1.0]
-      ]
-    })
   }
 }

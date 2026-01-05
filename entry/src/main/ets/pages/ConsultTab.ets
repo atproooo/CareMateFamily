@@ -56,6 +56,7 @@ struct HealthEduCard {
  */
 @Component
 export default struct ConsultTab {
+  private scroller: Scroller = new Scroller();
   // 下拉刷新状态，配合 PullToRefresh 使用
   @State @Watch('onRefreshingChanged') isRefreshing: boolean = false;
   @State healthEduList: HealthEduItem[] = INITIAL_HEALTH_EDU_LIST;
@@ -128,7 +129,7 @@ export default struct ConsultTab {
   // 咨询页主体内容 Builder
   @Builder
   private buildConsultContent(): void {
-    Scroll() {
+    Scroll(this.scroller) {
       Column() {
         // 顶部标题栏
         Row() {
@@ -198,26 +199,52 @@ export default struct ConsultTab {
     })
   }
 
+  private scrollToTop(): void {
+    this.scroller.scrollTo({ xOffset: 0, yOffset: 0, animation: true });
+  }
+
   build() {
-    Column() {
-      PullToRefresh({
-        refreshing: $isRefreshing,
-        pullOffset: 64
-      }) {
-        this.buildConsultContent();
+    Stack({ alignContent: Alignment.BottomEnd }) {
+      Column() {
+        PullToRefresh({
+          refreshing: $isRefreshing,
+          pullOffset: 64
+        }) {
+          this.buildConsultContent();
+        }
       }
+      .width('100%')
+      .height('100%')
+      // 页面绿色渐变背景
+      .linearGradient({
+        angle: 180,
+        colors: [
+          [0xFF2EC7A8, 0.0],
+          [0xFFA0EACD, 0.35],
+          [0xFFF5FFFC, 0.5],
+          [0xFFFFFFFF, 1.0]
+        ]
+      })
+
+      // 右下角返回顶部按钮（样式同 HealthTab）
+      Row() {
+        Text('↑')
+          .fontSize(22)
+          .fontColor(0xFFFFFFFF)
+      }
+      .width(54)
+      .height(54)
+      .backgroundColor($r('app.color.service_button_background_color'))
+      .borderRadius(27)
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .margin({ right: 20, bottom: 20 })
+      .onClick(() => {
+        this.scrollToTop();
+      })
+      .zIndex(10)
     }
     .width('100%')
     .height('100%')
-    // 页面绿色渐变背景
-    .linearGradient({
-      angle: 180,
-      colors: [
-        [0xFF2EC7A8, 0.0],
-        [0xFFA0EACD, 0.35],
-        [0xFFF5FFFC, 0.5],
-        [0xFFFFFFFF, 1.0]
-      ]
-    })
   }
 }
